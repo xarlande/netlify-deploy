@@ -7,7 +7,28 @@ const api = express();
 
 const router = Router();
 
-api.get("/api/customMessage", (req, res) => {
+const validUsername = "root";
+const validPassword = "root";
+
+function checkAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Basic ")) {
+        return res.status(401).json({ message: "Авторизація потрібна" });
+    }
+
+    const base64Credentials = authHeader.split(" ")[1];
+    const credentials = Buffer.from(base64Credentials, "base64").toString("utf-8");
+    const [username, password] = credentials.split(":");
+
+    if (username === validUsername && password === validPassword) {
+        return next();
+    } else {
+        return res.status(403).json({ message: "Невірний логін або пароль" });
+    }
+}
+
+api.get("/api/customMessage", checkAuth,(req, res) => {
     const { name, theme } = req.query;
 
     const messages: { [key: string]: string[] } = {
@@ -34,37 +55,6 @@ api.get("/api/customMessage", (req, res) => {
     res.json({
         message: resultMessage
     });
-});
-
-
-api.get("/api/getAge", (req, res) => {
-    const methodParameters = req.query || {};
-
-    const result = {
-        method_parameters: methodParameters,
-        result: {
-            age: 13
-        }
-    };
-
-    res.json(result);
-});
-
-api.get("/api/getFullName", (req, res) => {
-    const methodParameters = req.query || {};
-    let fullName = "";
-
-    if (methodParameters.name && methodParameters.last_name) {
-        fullName = `${methodParameters.name} ${methodParameters.last_name}`;
-    }
-
-    const result = {
-        result: {
-            full_name: fullName
-        }
-    };
-
-    res.json(result);
 });
 
 api.use("/api/", router);
