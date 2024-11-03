@@ -6,7 +6,41 @@ import serverless from "serverless-http";
 const api = express();
 
 const router = Router();
-router.get("/hello", (req, res) => res.send("Hello World!"));
+
+api.get("/api/getAge", (req, res) => {
+    // Отримуємо параметри із запиту
+    const methodParameters = req.query || {};
+
+    // Повертаємо відповідь з віком
+    const result = {
+        method_parameters: methodParameters,
+        result: {
+            age: 13
+        }
+    };
+
+    res.json(result);
+});
+
+api.get("/api/getFullName", (req, res) => {
+    // Отримуємо параметри із запиту
+    const methodParameters = req.query || {};
+    let fullName = "";
+
+    if (methodParameters.name && methodParameters.last_name) {
+        fullName = `${methodParameters.name} ${methodParameters.last_name}`;
+    }
+
+    // Повертаємо відповідь з повним іменем
+    const result = {
+        method_parameters: methodParameters,
+        result: {
+            full_name: fullName
+        }
+    };
+
+    res.json(result);
+});
 
 api.use("/api/", router);
 
