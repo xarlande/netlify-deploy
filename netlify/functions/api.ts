@@ -33,7 +33,6 @@ api.get("/api/getFullName", (req, res) => {
 
     // Повертаємо відповідь з повним іменем
     const result = {
-        method_parameters: methodParameters,
         result: {
             full_name: fullName
         }
