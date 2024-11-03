@@ -7,11 +7,39 @@ const api = express();
 
 const router = Router();
 
+api.get("/api/customMessage", (req, res) => {
+    const { name, theme } = req.query;
+
+    const messages: { [key: string]: string[] } = {
+        motivation: [
+            "Ніколи не зупиняйся, навіть якщо важко.",
+            "Великі досягнення починаються з маленьких кроків.",
+            "Тільки той, хто йде вперед, досягне мети."
+        ],
+        humor: [
+            "Код писався довго, а запускався швидко. І одразу ж вилетів :)",
+            "Програмування - це коли ти знаєш всі помилки на ім'я.",
+            "Щоб стати успішним програмістом, просто не залишай жодного багу без уваги!"
+        ]
+    };
+
+    const chosenTheme = theme && messages[theme as string] ? theme : "motivation";
+    const randomIndex = Math.floor(Math.random() * messages[chosenTheme].length);
+    const randomMessage = messages[chosenTheme][randomIndex];
+
+    const resultMessage = name
+        ? `Привіт, ${name}! ${randomMessage}`
+        : randomMessage;
+
+    res.json({
+        message: resultMessage
+    });
+});
+
+
 api.get("/api/getAge", (req, res) => {
-    // Отримуємо параметри із запиту
     const methodParameters = req.query || {};
 
-    // Повертаємо відповідь з віком
     const result = {
         method_parameters: methodParameters,
         result: {
@@ -23,7 +51,6 @@ api.get("/api/getAge", (req, res) => {
 });
 
 api.get("/api/getFullName", (req, res) => {
-    // Отримуємо параметри із запиту
     const methodParameters = req.query || {};
     let fullName = "";
 
@@ -31,7 +58,6 @@ api.get("/api/getFullName", (req, res) => {
         fullName = `${methodParameters.name} ${methodParameters.last_name}`;
     }
 
-    // Повертаємо відповідь з повним іменем
     const result = {
         result: {
             full_name: fullName
